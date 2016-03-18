@@ -1,0 +1,69 @@
+'Code for the module
+Option Compare Text
+Public p_strDescription As String
+Public p_strName As String
+Public p_strCategory As String
+Public p_iGallery As Integer
+Public p_strComment As String
+Public p_Who As String
+
+Sub AddComment()
+' comment applys to the insert point or the text that has been highlighted
+'Next 2 lines are the default choice
+p_strComment = "Select from available options"
+p_Who = "Insert"
+'Note that p_Who is referencing a category of the comment. This assists clients understand the types of comments that are being made.
+ReviewUI.Show
+With ActiveDocument.Comments.Add(Range:=Selection.Range, Text:=p_strComment)
+    .ShowTip = True
+    .Author = "Legal " & p_Who
+    .Initial = p_Who
+End With
+End Sub
+
+'Code for the form reviewUI
+Private Sub UserForm_Initialize()
+'if keywords are used to identify the form and function of teh template then the next line may be used.
+    ActiveDocument.BuiltInDocumentProperties("Keywords") = addKeyword("Document Assembly")
+    txtDescription.Value = p_strComment
+    optReference.Value = 0
+    optDrafting.Value = 0
+    optInsert.Value = 1
+    optInternal.Value = 0
+    optTip.Value = 0
+End Sub
+Private Sub optReference_Click()
+txtDescription.Value = "Please confirm/correct the intended cross reference."
+End Sub
+Private Sub optDrafting_Click()
+txtDescription.Value = "The change in notation is noted and it is suggested this is made consistent."
+End Sub
+Private Sub optInsert_Click()
+txtDescription.Value = "Please select from available options"
+End Sub
+Private Sub optInternal_Click()
+txtDescription.Value = "Please provide instructions on whether this is acceptable. Does it meet client's expectation?"
+End Sub
+
+Private Sub optTip_Click()
+txtDescription.Value = " "
+End Sub
+Private Sub btnAccept_Click()
+'p_Who is disected to cover typical categories.  The actual choice will depend on the preference of the practice group.
+    p_strComment = txtDescription.Value
+    If optReference.Value Then
+        p_Who = "Cross Reference"
+    ElseIf optDrafting.Value Then
+        p_Who = "Drafing Note"
+    ElseIf optInsert.Value Then
+        p_Who = "Insert"
+    ElseIf optInternal.Value Then
+        p_Who = "Internal"
+    ElseIf optTip.Value Then
+        p_Who = "Tip"
+        ActiveDocument.BuiltInDocumentProperties("Keywords") = addKeyword("Guidance")
+    Else
+        p_Who = "Insert"
+    End If
+Unload Me
+End Sub
