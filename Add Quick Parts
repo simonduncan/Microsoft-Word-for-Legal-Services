@@ -1,0 +1,131 @@
+'Module component of the macro
+Option Compare Text
+Public p_strDescription As String
+Public p_strName As String
+Public p_strCategory As String
+Public p_iGallery As Integer
+Public p_strComment As String
+Public p_Who As String
+
+Sub AddQuickParts()
+' Adds standard clauses, articles and execution blocks to a template
+' Reference: http://gregmaxey.mvps.org/word_tip_pages/content_controls.html
+Dim objThisTemplate As Template
+Dim objBB As BuildingBlock
+
+' Set the template to store the building block to the current open document.
+Set objThisTemplate = ActiveDocument.AttachedTemplate ' or Templates(1)
+
+' Determine text to add
+AssemblyUI.Show
+
+If Len(Selection.Range) > 1 Then ' when text is actually selected
+    Set objBB = objThisTemplate.BuildingBlockEntries.Add _
+        (Name:=p_strName, _
+        Type:=p_iGallery, _
+        Category:=p_strCategory, _
+        Range:=Selection.Range, _
+        Description:=p_strDescription, _
+        InsertOptions:=wdInsertParagraph) ' Selection.Range must be used for the range
+Else ' when no text is selected
+    MsgBox "Set standard QPs"
+End If
+cleanKeywords True
+
+Set objThisTemplate = Nothing
+Set objBB = Nothing
+
+End Sub
+
+'Form component of the macro
+Private Sub btnAccept_Click()
+p_strName = txtQPartname.Value
+p_strDescription = txtQPartdescription.Value
+ActiveDocument.BuiltInDocumentProperties("Keywords") = addKeyword(vCategory.Value)
+p_strCategory = vCategory.Value
+
+' Convert text selected to emulation type
+If vGallery.Value = "Quick Parts" Then ' reference https://msdn.microsoft.com/en-us/library/microsoft.office.interop.word.wdbuildingblocktypes(v=office.14).aspx
+    p_iGallery = wdTypeQuickParts
+ElseIf vGallery.Value = "AutoText" Then
+    p_iGallery = wdTypeAutoText
+ElseIf vGallery.Value = "Cover Page" Then
+    p_iGallery = wdTypeCoverPage
+Else
+    p_iGallery = wdTypeQuickParts
+End If
+
+Unload Me
+End Sub
+
+Private Sub vGallery_Change()
+Dim index As Integer
+index = vGallery.ListIndex
+vCategory.Clear
+
+Select Case index
+    Case Is = 0 ' quick parts
+        With vCategory
+            .AddItem "Agreement Execution Block"
+            .AddItem "Deed Execution Block"
+            .AddItem "Letter Execution Block"
+            .AddItem "Definition"
+            .AddItem "Clause Confidentiality"
+            .AddItem "Clause Dispute"
+            .AddItem "Clause Governing Law"
+            .AddItem "Clause Publication"
+        End With
+    Case Is = 1 'auto text
+        With vCategory
+            .AddItem "Closing" 'ending of letters
+            .AddItem "Entity" 'type of entities
+            .AddItem "Place" 'specific locations often mentioned
+            .AddItem "Role" 'specific titles often mentioned
+            .AddItem "Time" 'time slots often used
+        End With
+    Case Is = 2 ' cover page
+        With vCategory
+            .AddItem "Internal"
+            .AddItem "External"
+        End With
+End Select
+
+txtQPartdescription.Value = txtQPartname.Value & " for " & vCategory.Value
+End Sub
+Private Sub vCategory_Change()
+
+txtQPartdescription.Value = txtQPartname.Value & " for " & vCategory.Value
+End Sub
+Private Sub txtQPartname_Change()
+
+txtQPartdescription.Value = txtQPartname.Value & " for " & vCategory.Value
+End Sub
+Private Sub UserForm_Initialize()
+' Set the choices within the custom form
+' Default values should be what is presently in the properties
+ActiveDocument.BuiltInDocumentProperties("Keywords") = addKeyword("Document Assembly")
+
+txtQPartname.Value = "enter unique title name"
+txtQPartdescription.Value = "enter succint description"
+
+With vGallery
+    .AddItem "Quick Parts"
+    .AddItem "AutoText"
+    .AddItem "Cover Page"
+End With
+vGallery.Value = "Quick Parts"
+
+With vCategory
+' Consider what standard categories are to apply. The actual choices will depend on the legal practice environment
+    .AddItem "Agreement Execution Block"
+    .AddItem "Deed Execution Block"
+    .AddItem "Letter Execution Block"
+    .AddItem "Clause Confidentiality"
+    .AddItem "Clause Dispute"
+    .AddItem "Clause Governing Law"
+    .AddItem "Clause Publication"
+End With
+
+vCategory.Value = "Agreement Execution Block"
+
+End Sub
