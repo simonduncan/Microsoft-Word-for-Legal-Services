@@ -1,3 +1,3 @@
 # Microsoft-Word-for-Legal-Services
 A collection of snipets and useful tools to enhance the productivity of lawyers drafting documents
-Wiki: https://github.com/simonduncan/Microsoft-Word-for-Legal-Services/wiki 
+The project is described at: https://github.com/simonduncan/Microsoft-Word-for-Legal-Services/wiki 
