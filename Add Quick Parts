@@ -1,4 +1,13 @@
-'Module component of the macro
+' * Copyright (c) 1999-2016 Simon Duncan
+' *
+' * Please see the LICENSE file distributed with this source code for further
+' * information regarding licensing of the copyright protected work. The author
+' * asserts his moral rights in the work as provided under the Copyright Act 
+' * 1968 (Australia) which includes the right to be attributed as the author.
+'
+' This code is written in two parts. One for the module and the other for the form.
+
+'Part 1: Module component of the macro
 Option Compare Text
 Public p_strDescription As String
 Public p_strName As String
@@ -37,7 +46,7 @@ Set objBB = Nothing
 
 End Sub
 
-'Form component of the macro
+'Part 2: Form component of the macro
 Private Sub btnAccept_Click()
 p_strName = txtQPartname.Value
 p_strDescription = txtQPartdescription.Value
